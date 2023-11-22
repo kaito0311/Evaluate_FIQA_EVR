@@ -7,11 +7,11 @@ from config.cfg import config
 from metrics.ERC.utils import *
 
 
-def quality_eval(pair_list_path, embedding_dir, path_score, output_dir="output_dir", FMR=1e-3):
+def quality_eval(
+    pair_list_path, embedding_dir, path_score, output_dir="output_dir", FMR=1e-3
+):
     method_names = ["ABCXYZ"]
     fnmrs_list_2 = []
-    fnmrs_list_3 = []
-    fnmrs_list_4 = []
     method_labels = []
 
     for method_name in method_names:
@@ -24,54 +24,34 @@ def quality_eval(pair_list_path, embedding_dir, path_score, output_dir="output_d
 
         quality_scores = load_quality_pair(pair_list_path, path_score, None, None)
 
-        fnmr2, fnmr3, fnmr4, unconsidered_rates = getFNMRFixedTH(
-            feat_pairs,
-            quality_scores,
+        fnmr, unconsidered_rates = getFNMRFixedFMR(
+            feat_pairs=feat_pairs,
+            qlts=quality_scores,
+            FMR=FMR,
             dist_type="cosine",
             desc=desc,
         )
-        fnmrs_list_2.append(fnmr2)
-        fnmrs_list_3.append(fnmr3)
-        fnmrs_list_4.append(fnmr4)
+        fnmrs_list_2.append(fnmr)
         method_labels.append(f"{method_name}")
 
         os.makedirs(
-            os.path.join(
-                output_dir,
-                "fnmr"
-            ),
+            os.path.join(output_dir, "fnmr"),
             exist_ok=True,
         )
         np.save(
             os.path.join(
                 output_dir,
                 "fnmr",
-                f"{method_name}_fnmr2.npy",
+                f"{method_name}_fnmr.npy",
             ),
-            fnmr2,
+            fnmr,
         )
-        # np.save(
-        #     os.path.join(
-        #         output_dir,
-        #         "fnmr",
-        #         f"{method_name}_fnmr3.npy",
-        #     ),
-        #     fnmr3,
-        # )
-        # np.save(
-        #     os.path.join(
-        #         output_dir,
-        #         "fnmr",
-        #         f"{method_name}_fnmr4.npy",
-        #     ),
-        #     fnmr4,
-        # )
 
     save_pdf(
         fnmrs_list_2,
         method_labels,
         model="ABC_XYS",
         output_dir=output_dir,
-        fmr=1e-2,
+        fmr=FMR,
         db="DATASET",
     )

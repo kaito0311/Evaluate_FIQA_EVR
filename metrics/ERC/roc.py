@@ -140,10 +140,34 @@ def get_eer_threshold(gen_scores, imp_scores, hformat=False, ds_scores=False):
     ind, fmr10000 = get_fmr_op(fmr, fnmr, 0.0001)
     fmr10000_th = thrs[ind]
 
-
-
-
-
-
-
     return fmr100_th, fmr1000_th, fmr10000_th
+
+def get_eer_threshold_fix_fmr(gen_scores, imp_scores, fmr_fixed= 1e-3, hformat=False, ds_scores=False):
+    """Calculates EER associated statistics
+    Keyword Arguments:
+    @param gen_scores: The genuine scores
+    @type gen_scores: list
+    @param imp_scores: The impostor scores
+    @type imp_scores: list
+    @param id: An id for the experiment
+    @type id: str
+    @param hformat: Indicates whether the impostor scores are in histogram
+        format
+    @type hformat: bool
+    @param ds_scores: Indicates whether the input scores are dissimilarity
+        scores
+    @type ds_scores: bool
+    """
+
+    # Calculating probabilities using scores as thrs
+    roc_info = calculate_roc(gen_scores, imp_scores,
+                                 ds_scores, rates=False)
+    gnumber = len(gen_scores)
+    inumber = len(imp_scores)
+    thrs, fm, fnm = roc_info
+    fmr = fm / inumber
+    fnmr = fnm / gnumber
+    ind, fmr1000 = get_fmr_op(fmr, fnmr, fmr_fixed)
+    fmr1000_th = thrs[ind]
+
+    return fmr1000_th

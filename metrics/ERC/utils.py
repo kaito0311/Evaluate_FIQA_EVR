@@ -1,13 +1,13 @@
 import os
-import math 
+import math
 
 import sklearn
-import numpy as np 
+import numpy as np
 from sklearn import metrics
-import matplotlib.pyplot as plt 
+import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
 
-from metrics.ERC.roc import * 
+from metrics.ERC.roc import *
 
 
 def load_feat_pair(pair_path, root):
@@ -25,6 +25,7 @@ def load_feat_pair(pair_path, root):
             pairs[idex] = [feat_a, feat_b, is_same]
     print("All features are loaded")
     return pairs
+
 
 def load_quality(path_score):
     quality = {}
@@ -73,6 +74,7 @@ def distance_(embeddings0, embeddings1, dist="cosine"):
 
     return dist
 
+
 def calc_score(
     embeddings0, embeddings1, actual_issame, subtract_mean=False, dist_type="cosine"
 ):
@@ -89,7 +91,6 @@ def calc_score(
     pos_scores = np.sort(dist[actual_issame == 1])
     neg_scores = np.sort(dist[actual_issame == 0])
     return pos_scores, neg_scores
-
 
 
 def getFNMRFixedTH(feat_pairs, qlts, dist_type="cosine", desc=True):
@@ -146,6 +147,55 @@ def getFNMRFixedTH(feat_pairs, qlts, dist_type="cosine", desc=True):
 
     return fnmrs_list_2, fnmrs_list_3, fnmrs_list_4, unconsidered_rates
 
+
+def getFNMRFixedFMR(feat_pairs, qlts, FMR=1e-3, dist_type="cosine", desc=True):
+    embeddings0, embeddings1, targets = [], [], []
+    pair_qlt_list = []  # store the min qlt
+    for k, v in feat_pairs.items():
+        feat_a = v[0]
+        feat_b = v[1]
+        ab_is_same = int(v[2])
+        # convert into np
+        np_feat_a = np.asarray(feat_a, dtype=np.float64)
+        np_feat_b = np.asarray(feat_b, dtype=np.float64)
+        # append
+        embeddings0.append(np_feat_a)
+        embeddings1.append(np_feat_b)
+        targets.append(ab_is_same)
+
+    # evaluate
+    embeddings0 = np.vstack(embeddings0)
+    embeddings1 = np.vstack(embeddings1)
+    targets = np.vstack(targets).reshape(
+        -1,
+    )
+    qlts = np.array(qlts)
+    if desc:
+        qlts_sorted_idx = np.argsort(qlts)
+    else:
+        qlts_sorted_idx = np.argsort(qlts)[::-1]
+
+    num_pairs = len(targets)
+    unconsidered_rates = np.arange(0, 0.98, 0.05)
+
+    fnmrs_list_2 = []
+
+    for u_rate in unconsidered_rates:
+        hq_pairs_idx = qlts_sorted_idx[int(u_rate * num_pairs) :]
+        pos_dists, neg_dists = calc_score(
+            embeddings0[hq_pairs_idx],
+            embeddings1[hq_pairs_idx],
+            targets[hq_pairs_idx],
+            dist_type=dist_type,
+        )
+        fmr100_th = get_eer_threshold_fix_fmr(
+            pos_dists, neg_dists,fmr_fixed= FMR, ds_scores=True
+        )
+
+        g_true = [g for g in pos_dists if g < fmr100_th]
+        fnmrs_list_2.append(1 - len(g_true) / (len(pos_dists)))
+     
+    return fnmrs_list_2, unconsidered_rates
 
 
 def save_pdf(fnmrs_lists, method_labels, model, output_dir, fmr, db):
@@ -217,7 +267,7 @@ def save_pdf(fnmrs_lists, method_labels, model, output_dir, fmr, db):
             np.array(unconsidered_rates[: len(fnmrs_lists[i])] / 100),
             np.array(fnmrs_lists[i]),
         )
-        os.makedirs(os.path.join(output_dir, db), exist_ok= True)
+        os.makedirs(os.path.join(output_dir, db), exist_ok=True)
         with open(os.path.join(output_dir, db, str(fmr) + "_auc.txt"), "a") as f:
             f.write(
                 db + ":" + model + ":" + method_labels[i] + ":" + str(auc_value) + "\n"
