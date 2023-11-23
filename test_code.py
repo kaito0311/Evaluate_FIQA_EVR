@@ -16,13 +16,13 @@ from process_dataset.xqlfw_dataset import process_xqlf_pairs
 
 # print(output)
 
-# quality_eval(
-#     "/data/disk2/tanminh/CR-FIQA/data/quality_data/XQLFW/pair_list.txt",
-#     embedding_dir= "/data/disk2/tanminh/CR-FIQA/data/quality_embeddings/XQLFW_ElasticFaceModel",
-#     path_score="/data/disk2/tanminh/CR-FIQA/data/quality_data/XQLFW/CRFIQAS_XQLFW.txt",
-#     output_dir="output_dir",
-#     FMR = 1e-3
-# )
+quality_eval(
+    "/data/disk2/tanminh/Evaluate_FIQA_EVR/data/processed_XQLFW/pairs_image_list.txt",
+    embedding_dir= "features_temp",
+    path_score="score_file.txt",
+    output_dir="output_dir_3",
+    FMR = 1e-3
+)
 
 # process_xqlf_pairs(
 #     output_path_dir="data/processed_XQLFW/images/",
@@ -49,17 +49,16 @@ from process_dataset.xqlfw_dataset import process_xqlf_pairs
 # from models.recognition_model.Elastic_model.elasticface import ElasticFaceModel
 # import torch 
 # from models.recognition_model.extract_embed import extract_features, save_features
+# import glob 
+
 # model = ElasticFaceModel(pretrained="/data/disk2/tanminh/CR-FIQA/pretrained/295672backbone.pth")
-# model.model = model._get_model()
-# dummy_input = torch.rand(5, 3,112,112)
-# model.model.eval()
-# output = model(dummy_input)
-# print(output.shape)
-# image_path_list= ["data/processed_XQLFW/images/Aaron_Eckhart_0001.jpg", "data/processed_XQLFW/images/Aaron_Eckhart_0001.jpg"]
+# # print(output.shape)
+# image_path_list= glob.glob("data/processed_XQLFW/images/*.jpg")
 
 # features = extract_features(
 #     model= model, 
-#     image_path_list= ["data/processed_XQLFW/images/Aaron_Eckhart_0001.jpg", "data/processed_XQLFW/images/Aaron_Eckhart_0001.jpg"],
+#     image_path_list= image_path_list,
+#     batch_size= 16,
 #     device= "cuda"
 # )
 
@@ -69,4 +68,28 @@ from process_dataset.xqlfw_dataset import process_xqlf_pairs
 #     list_name= image_path_list
 # )
 
+
+# import torch 
+# import glob 
+# from models.quality_model.CRFIQA.crfiqa import CR_FIQA_Model 
+# from models.quality_model.extract_score import extract_scores, save_scores
+
+# model = CR_FIQA_Model(pretrained="/data/disk2/tanminh/CR-FIQA/pretrained/32572backbone.pth")
+
+# image_path_list= glob.glob("data/processed_XQLFW/images/*.jpg")
+
+# output_scores = extract_scores(
+#     model= model, 
+#     image_path_list= image_path_list,
+#     batch_size=16,
+#     device= "cuda"
+# )
+
+# print(output_scores)
+
+# save_scores(
+#     output_file="score_file.txt",
+#     ls_scores= output_scores,
+#     list_name= image_path_list
+# )
 

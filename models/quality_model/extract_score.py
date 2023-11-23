@@ -10,10 +10,10 @@ from PIL import Image
 
 
 
-def extract_features(model, image_path_list, img_size=(112, 112), batch_size=4, device="cpu"):
+def extract_scores(model, image_path_list, img_size=(112, 112), batch_size=4, device="cpu"):
     count = 0 
     num_batch = int(len(image_path_list) // batch_size)
-    features = [] 
+    scores = [] 
     model.to(device)
 
     transform = T.Compose([
@@ -43,27 +43,28 @@ def extract_features(model, image_path_list, img_size=(112, 112), batch_size=4, 
             list_image_tensor.append(convert_to_tensor(image_path)) 
         
         batch_tensor = torch.cat(list_image_tensor, dim=0) 
-        batch_feature = model(batch_tensor) 
-        if isinstance(batch_feature, torch.Tensor):
-            batch_feature = batch_feature.detach().cpu().numpy() 
-        features.append(batch_feature) 
+        # NOTE: Can change depends on output of model. 
+        batch_scores = model(batch_tensor) 
+        if isinstance(batch_scores, torch.Tensor):
+            batch_scores = batch_scores.detach().cpu().numpy() 
+        scores.append(batch_scores) 
 
-    features = np.vstack(features)
-    features = normalize(features)
+    scores = np.vstack(scores)
     
-    return features 
+    return scores 
 
 
-def save_features(output_dir, ls_features, list_name): 
-    assert len(list_name) == len(ls_features) 
-
-    os.makedirs(output_dir, exist_ok= True) 
-
+def save_scores(output_file, ls_scores, list_name): 
+    assert len(list_name) == len(ls_scores) 
+    if len(os.path.dirname(output_file)) > 0:
+        os.makedirs(os.path.dirname(output_file), exist_ok= True) 
+    file = open(output_file, "w")
     for count, name in tqdm(enumerate(list_name)): 
         basename  = os.path.basename(name) 
         basename = basename.split(".")[0]
 
-        np.save(os.path.join(output_dir, basename), ls_features[count])
-    
-    
-        
+        # np.save(os.path.join(output_dir, basename), ls_scores[count])
+        file.write(
+            basename + ".jpg" + " " + str(ls_scores[count][0]) + "\n"
+        )
+    file.close() 

@@ -47,8 +47,10 @@ def load_quality_pair(pair_path, path_score, dataset, args):
         lines = f.readlines()
         for idex in range(len(lines)):
             name1 = lines[idex].rstrip().split()[0]
+            name1 = os.path.basename(name1)
             name1 = name1.split(".")[0]
             name2 = lines[idex].rstrip().split()[1]
+            name2 = os.path.basename(name2)
             name2 = name2.split(".")[0]
             qlt = min(
                 float(quality.get(name1)),
