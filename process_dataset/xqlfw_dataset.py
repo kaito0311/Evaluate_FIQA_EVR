@@ -14,7 +14,7 @@ def copy_img(output_path, dataset_folder, name_person, img_id):
     )
     return img_name, os.path.abspath(tmp_path)
 
-def process_xqlf_pairs(output_path_dir, image_path_list, pair_list, dataset_folder, pairs_list_path): 
+def process_xqlf_pairs(output_path_dir, image_path_list, pair_list, dataset_folder, pairs_list_path_original): 
     '''
     
     Argument: 
@@ -26,7 +26,7 @@ def process_xqlf_pairs(output_path_dir, image_path_list, pair_list, dataset_fold
     
     '''
 
-    f = open(pairs_list_path, "r")
+    f = open(pairs_list_path_original, "r")
     os.makedirs(os.path.dirname(image_path_list), exist_ok= True)
     os.makedirs(os.path.dirname(pair_list), exist_ok= True)
     img_path_file = open(image_path_list, "w") 

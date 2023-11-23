@@ -8,14 +8,17 @@ from metrics.ERC.utils import *
 
 
 def quality_eval(
-    pair_list_path, embedding_dir, path_score, output_dir="output_dir", FMR=1e-3
+    list_method_compares, 
+    pair_list_path, embedding_dir, list_path_score, output_dir="output_dir", FMR=1e-3
 ):
-    method_names = ["ABCXYZ"]
+    method_names = list_method_compares
     fnmrs_list_2 = []
     method_labels = []
 
-    for method_name in method_names:
+    for index, method_name in enumerate(method_names):
         desc = False if method_name == "PFE" else True
+
+        path_score = list_path_score[index]
 
         feat_pairs = load_feat_pair(
             pair_list_path,
@@ -46,12 +49,12 @@ def quality_eval(
             ),
             fnmr,
         )
-
+    print(len(fnmrs_list_2))
     save_pdf(
         fnmrs_list_2,
         method_labels,
-        model="ABC_XYS",
+        model= config.name_face_recog_model,
         output_dir=output_dir,
         fmr=FMR,
-        db="DATASET",
+        db= config.name_dataset,
     )
