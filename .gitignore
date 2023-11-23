@@ -1,1 +1,3 @@
 output_dir/
+data/
+*.npy
