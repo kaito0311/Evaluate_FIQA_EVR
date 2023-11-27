@@ -5,6 +5,7 @@ import numpy as np
 import torch
 
 from models.Normalize import Normalize
+from models.iresnet_imintv5 import iresnet160
 
 
 def F(Si : list, sf : float, p : int=5) -> float:
@@ -29,6 +30,15 @@ def load_cosface():
     """
     from models.iresnet import load_cosface as lc
     return lc()
+
+def load_imintv5(pretrained = None, **kwargs):
+    model = iresnet160(False, **kwargs)
+    if pretrained is not None: 
+        print("[INFO] Loadding pretrained...")
+        weight= torch.load(pretrained) 
+        model.load_state_dict(weight) 
+    model.eval() 
+    return model 
 
 
 def add_norm_to_model(model: torch.nn.Module, mean: list, std: list) -> torch.nn.Module:

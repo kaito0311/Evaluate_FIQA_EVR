@@ -1,13 +1,13 @@
 import os 
 
 class config:
-    name_dataset = "XQLFW" 
+    name_dataset = "IJB_C" 
     name_quality_model = "model"
     name_face_recog_model = "Elastic"
 
     # dataset infor
-    dataset_original =  "/data/disk2/tanminh/CR-FIQA/data/XQLFW/xqlfw_aligned_112"
-    pairs_list_path_original =  "/data/disk2/tanminh/CR-FIQA/data/XQLFW/xqlfw_pairs.txt"
+    # dataset_original =  "/data/disk2/tanminh/CR-FIQA/data/XQLFW/xqlfw_aligned_112"
+    # pairs_list_path_original =  "/data/disk2/tanminh/CR-FIQA/data/XQLFW/xqlfw_pairs.txt"
 
 
     # save process dataset infor

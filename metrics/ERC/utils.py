@@ -52,10 +52,16 @@ def load_quality_pair(pair_path, path_score, dataset, args):
             name2 = lines[idex].rstrip().split()[1]
             name2 = os.path.basename(name2)
             name2 = name2.split(".")[0]
-            qlt = min(
-                float(quality.get(name1)),
-                float(quality.get(name2)),
-            )
+            try:
+                qlt = min(
+                    float(quality.get(name1)),
+                    float(quality.get(name2)),
+                )
+            except Exception as e:
+                print(e)
+                print(name1)
+                print(name2)
+                
             pairs_quality.append(qlt)
     return pairs_quality
 

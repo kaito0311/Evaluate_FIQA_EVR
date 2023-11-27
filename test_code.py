@@ -1,177 +1,63 @@
-from metrics.ERC.utils import load_quality_pair, load_feat_pair
-from metrics.ERC.erc import quality_eval
-from process_dataset.xqlfw_dataset import process_xqlf_pairs
-
-import os 
-import pickle 
-import time 
-import cv2 
-import requests 
-import json 
-import time 
-import requests 
-import base64 
-import io 
-
-from PIL import Image 
-
-
-import os 
-import json 
-import time 
-import requests 
-import base64 
-import io 
-import glob 
-
+import os
+import cv2
+import numpy as np
+import shutil
+from skimage import transform as trans
 from tqdm import tqdm
-import cv2 
-from PIL import Image 
-
-list_images = list_images = glob.glob("/data/disk2/tanminh/Evaluate_FIQA_EVR/data/processed_XQLFW/images/*.jpg")
-
-def get_quality(image, api= "http://172.16.10.240:8899/dif-face/quality"):
-    tik = time.time()
-    byte_content = (cv2.imencode('.jpg', image)[1]).tobytes()
-    request_header = {"file": byte_content}
-    r = requests.post(api, files= request_header)
-    # print(r.json())
-    return r.json()["res"][0]["score"]
-
-file_output = open("XQLFW_DiffFIQA.txt", "a") 
-
-for image_path in tqdm(list_images):
-    quaility = get_quality(
-        image= cv2.imread(image_path)
-    )
-    file_output.write(
-        os.path.basename(
-            image_path
-        ) + " " + str(quaility) + "\n"
-    )
-file_output.close() 
 
 
+# change this for other dataset
+path = "/data/disk2/tanminh/ijb/IJBC"
+image_size = (112,112)
+outpath = "./data/process_IJB_C"
+
+ref_lmk = np.array([
+            [30.2946, 51.6963],
+            [65.5318, 51.5014],
+            [48.0252, 71.7366],
+            [33.5493, 92.3655],
+            [62.7299, 92.2041]], dtype=np.float32)
+ref_lmk[:, 0] += 8.0
+
+dataset_name = path.split("/")[-1]
+rel_img_path = os.path.join(outpath.split("/")[-1], dataset_name, "images")
+outpath = os.path.join(outpath, dataset_name)
+if not os.path.exists(outpath):
+    os.makedirs(outpath)
+    os.makedirs(os.path.join(outpath, "images"))
+
+print("extract:", dataset_name)
+
+img_path = os.path.join(path, "loose_crop")
+img_list_path = os.path.join(path, "meta", f"{dataset_name.lower()}_name_5pts_score.txt")
+img_list = open(img_list_path)
+files_list = img_list.readlines()
+
+txt_file = open(os.path.join(outpath, "image_path_list.txt"), "w")
+
+for img_index, each_line in tqdm(enumerate(files_list), total=len(files_list)):
+    name_lmk_score = each_line.strip().split(' ')
+    img_name = os.path.join(img_path, name_lmk_score[0])
+    img = cv2.imread(img_name)
+    lmk = np.array([float(x) for x in name_lmk_score[1:-1]],
+                    dtype=np.float32)
+    lmk = lmk.reshape((5, 2))
+
+    assert lmk.shape[0] == 5 and lmk.shape[1] == 2
+
+    tform = trans.SimilarityTransform()
+    tform.estimate(lmk, ref_lmk)
+    M = tform.params[0:2, :]
+    img = cv2.warpAffine(img, M, image_size, borderValue=0.0)
+    img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+
+    cv2.imwrite(os.path.join(outpath, "images", name_lmk_score[0]), img)
+    txt_file.write(os.path.join(rel_img_path, name_lmk_score[0])+"\n")
 
 
-
-# def get_(image, api= "http://172.16.10.240:8899/dif-face/quality"):
-#     tik = time.time()
-#     byte_content = (cv2.imencode('.jpg', image)[1]).tobytes()
-#     request_header = {"file": byte_content}
-#     r = requests.post(api, files= request_header)
-#     print(r.json())
-
-    
-# # item1 = ItemImage(image= np.random.rand(32, 32, 3))
-# get_(image = cv2.imread("output_dir_3/XQLFW/XQLFW_0.001_Elastic.png"))
-
-
-# with open("xqlfw_results.pkl", "rb") as file: 
-#     data = pickle.load(file) 
-# file.close() 
-
-# file_outut = open("output_xqlfw_faceqan.txt", "w")  
-
-# for path_file in data.keys():
-#     name_file = os.path.basename(path_file) 
-#     file_outut.write(
-#         str(name_file) + " " + str(data[path_file]) + "\n"
-#     )     
-# file_outut.close() 
-
-
-
-
-
-# output = load_quality_pair(
-#     pair_path= "/data/disk2/tanminh/CR-FIQA/data/quality_data/XQLFW/pair_list.txt",
-#     path_score= "/data/disk2/tanminh/CR-FIQA/data/quality_data/XQLFW/CRFIQAS_XQLFW.txt",
-#     dataset= None,
-#     args= None
-# )
-
-# output = load_feat_pair(
-#     root=pair_path= "/data/disk2/tanminh/CR-FIQA/data/quality_data/XQLFW/pair_list.txt",
-#     pair_path= "/data/disk2/tanminh/CR-FIQA/data/quality_data/XQLFW/pair_list.txt"
-# )
-
-# print(output)
-
-# quality_eval(
-#     "/data/disk2/tanminh/Evaluate_FIQA_EVR/data/processed_XQLFW/pairs_image_list.txt",
-#     embedding_dir= "features_temp",
-#     path_score="score_file.txt",
-#     output_dir="output_dir_3",
-#     FMR = 1e-3
-# )
-
-# process_xqlf_pairs(
-#     output_path_dir="data/processed_XQLFW/images/",
-#     image_path_list="data/processed_XQLFW/image_path_list.txt",
-#     pair_list= "data/processed_XQLFW/pairs_image_list.txt",
-#     dataset_folder= "/data/disk2/tanminh/CR-FIQA/data/XQLFW/xqlfw_aligned_112",
-#     pairs_list_path= "/data/disk2/tanminh/CR-FIQA/data/XQLFW/xqlfw_pairs.txt"
-# )
-
-# import torchvision.transforms as T 
-# from PIL import Image 
-
-# transform = T.Compose([
-#     T.Resize((112, 112)),
-#     T.ToTensor(),
-#     T.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
-# ])
-
-# img = Image.open("data/processed_XQLFW/images/Aaron_Eckhart_0001.jpg")
-# out = transform(img) 
-# print(out.shape)
-
-
-# from models.recognition_model.Elastic_model.elasticface import ElasticFaceModel
-# import torch 
-# from models.recognition_model.extract_embed import extract_features, save_features
-# import glob 
-
-# model = ElasticFaceModel(pretrained="/data/disk2/tanminh/CR-FIQA/pretrained/295672backbone.pth")
-# # print(output.shape)
-# image_path_list= glob.glob("data/processed_XQLFW/images/*.jpg")
-
-# features = extract_features(
-#     model= model, 
-#     image_path_list= image_path_list,
-#     batch_size= 16,
-#     device= "cuda"
-# )
-
-# save_features(
-#     output_dir="features_temp", 
-#     ls_features=features, 
-#     list_name= image_path_list
-# )
-
-
-# import torch 
-# import glob 
-# from models.quality_model.CRFIQA.crfiqa import CR_FIQA_Model 
-# from models.quality_model.extract_score import extract_scores, save_scores
-
-# model = CR_FIQA_Model(pretrained="/data/disk2/tanminh/CR-FIQA/pretrained/32572backbone.pth")
-
-# image_path_list= glob.glob("data/processed_XQLFW/images/*.jpg")
-
-# output_scores = extract_scores(
-#     model= model, 
-#     image_path_list= image_path_list,
-#     batch_size=16,
-#     device= "cuda"
-# )
-
-# print(output_scores)
-
-# save_scores(
-#     output_file="score_file.txt",
-#     ls_scores= output_scores,
-#     list_name= image_path_list
-# )
-
+txt_file.close()
+shutil.copy(
+    os.path.join(path, "meta", f"{dataset_name.lower()}_template_pair_label.txt"),
+    os.path.join(outpath, "pair_list.txt")
+)
+print("pair_list saved")

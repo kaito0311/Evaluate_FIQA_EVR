@@ -3,3 +3,9 @@ data/
 *.npy
 *.pth
 *.pkl
+output_dir_3/
+output/
+log/
+eval_results/
+results_unit/
+process_dataset

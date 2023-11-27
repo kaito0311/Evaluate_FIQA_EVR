@@ -12,7 +12,7 @@ model = ElasticFaceModel(pretrained=config.pretrained_face_recog)
 # print(output.shape)
 
 image_path_list= glob.glob(config.output_path_dir_images + "/*.jpg")
-
+print("[INFO]: Prcess image : ",config.output_path_dir_images,  len(image_path_list))
 features = extract_features(
     model= model, 
     image_path_list= image_path_list,

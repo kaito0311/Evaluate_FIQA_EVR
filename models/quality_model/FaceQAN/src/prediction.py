@@ -12,7 +12,7 @@ from tqdm import tqdm
 import torch
 from torchvision.transforms import transforms
 
-from util import F, load_cosface, add_norm_to_model
+from util import F, load_cosface, add_norm_to_model, load_imintv5
 from bim_attack import basic_iterative_method as BIM
 from symmetry import symmetry_estimation
 
@@ -60,6 +60,7 @@ def __calculate_score_single__(model: torch.nn.Module, image_transform: transfor
 
     quality_score = F(S_i, q_s)
 
+    os.makedirs("results_unit/", exist_ok= True)
     with open("results_unit/" + os.path.basename(image_path).split(".")[0] + ".txt", 'w') as file:
         file.write(str(quality_score))
     file.close() 
@@ -85,7 +86,8 @@ def __calculate_score_batch__(image_paths: list, eps: float, l: int, k: int, p: 
         In case you wish to use a different FR model simply replace the load_cosface function with a custom function 
         that loads your desired FR model, additionally change the mean, st.deviation and transform used by your custom FR model
     """
-    model: torch.nn.Module = load_cosface().eval().cuda()
+    # model: torch.nn.Module = load_cosface().eval().cuda()
+    model: torch.nn.Module = load_imintv5("/data/disk2/tanminh/Evaluate_FIQA_EVR/pretrained/r160_imintv4_statedict.pth").eval().cuda()
     mean, std = [.5, .5, .5], [.5, .5, .5]
     image_transforms = transforms.Compose([
         transforms.Resize((112, 112)),
