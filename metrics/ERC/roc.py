@@ -1,6 +1,7 @@
 
-import  numpy as np
+import numpy as np
 import operator
+
 
 def calculate_roc(gscores, iscores, ds_scores=False, rates=True):
     """Calculates FMR, FNMR
@@ -68,6 +69,7 @@ def calculate_roc(gscores, iscores, ds_scores=False, rates=True):
 
     return thresholds, fm_rates, fnm_rates
 
+
 def get_fmr_op(fmr, fnmr, op):
     """Returns the value of the given FMR operating point
     Definition:
@@ -84,6 +86,7 @@ def get_fmr_op(fmr, fnmr, op):
     """
     index = np.argmin(abs(fmr - op))
     return index, fnmr[index]
+
 
 def get_fnmr_op(fmr, fnmr, op):
     """Returns the value of the given FNMR operating point
@@ -102,9 +105,10 @@ def get_fnmr_op(fmr, fnmr, op):
     temp = abs(fnmr - op)
     min_val = np.min(temp)
     index = np.where(temp == min_val)[0][-1]
-    #index = np.argmin(abs(fnmr - op))
+    # index = np.argmin(abs(fnmr - op))
 
     return index, fmr[index]
+
 
 def get_eer_threshold(gen_scores, imp_scores, hformat=False, ds_scores=False):
     """Calculates EER associated statistics
@@ -125,7 +129,7 @@ def get_eer_threshold(gen_scores, imp_scores, hformat=False, ds_scores=False):
 
     # Calculating probabilities using scores as thrs
     roc_info = calculate_roc(gen_scores, imp_scores,
-                                 ds_scores, rates=False)
+                             ds_scores, rates=False)
     gnumber = len(gen_scores)
     inumber = len(imp_scores)
     thrs, fm, fnm = roc_info
@@ -142,7 +146,8 @@ def get_eer_threshold(gen_scores, imp_scores, hformat=False, ds_scores=False):
 
     return fmr100_th, fmr1000_th, fmr10000_th
 
-def get_eer_threshold_fix_fmr(gen_scores, imp_scores, fmr_fixed= 1e-3, hformat=False, ds_scores=False):
+
+def get_eer_threshold_fix_fmr(gen_scores, imp_scores, fmr_fixed=1e-3, hformat=False, ds_scores=False):
     """Calculates EER associated statistics
     Keyword Arguments:
     @param gen_scores: The genuine scores
@@ -161,7 +166,7 @@ def get_eer_threshold_fix_fmr(gen_scores, imp_scores, fmr_fixed= 1e-3, hformat=F
 
     # Calculating probabilities using scores as thrs
     roc_info = calculate_roc(gen_scores, imp_scores,
-                                 ds_scores, rates=False)
+                             ds_scores, rates=False)
     gnumber = len(gen_scores)
     inumber = len(imp_scores)
     thrs, fm, fnm = roc_info
@@ -171,3 +176,34 @@ def get_eer_threshold_fix_fmr(gen_scores, imp_scores, fmr_fixed= 1e-3, hformat=F
     fmr1000_th = thrs[ind]
 
     return fmr1000_th
+
+
+def get_eer_threshold_fix_fnmr(gen_scores, imp_scores, fnmr_fixed=1e-2, hformat=False, ds_scores=False):
+    """Calculates EER associated statistics
+    Keyword Arguments:
+    @param gen_scores: The genuine scores
+    @type gen_scores: list
+    @param imp_scores: The impostor scores
+    @type imp_scores: list
+    @param id: An id for the experiment
+    @type id: str
+    @param hformat: Indicates whether the impostor scores are in histogram
+        format
+    @type hformat: bool
+    @param ds_scores: Indicates whether the input scores are dissimilarity
+        scores
+    @type ds_scores: bool
+    """
+
+    # Calculating probabilities using scores as thrs
+    roc_info = calculate_roc(gen_scores, imp_scores,
+                             ds_scores, rates=False)
+    gnumber = len(gen_scores)
+    inumber = len(imp_scores)
+    thrs, fm, fnm = roc_info
+    fmr = fm / inumber
+    fnmr = fnm / gnumber
+    ind, fnmr1000 = get_fnmr_op(fmr, fnmr, fnmr_fixed)
+    fnmr1000_th = thrs[ind]
+
+    return fnmr1000_th, fnmr1000

@@ -209,6 +209,52 @@ def getFNMRFixedFMR(feat_pairs, qlts, FMR=1e-3, dist_type="cosine", desc=True):
      
     return fnmrs_list_2, unconsidered_rates
 
+def getFMRFixedFNMR(feat_pairs, qlts, dist_type="cosine", desc=True):
+    embeddings0, embeddings1, targets = [], [], []
+    pair_qlt_list = []  # store the min qlt
+    for k, v in feat_pairs.items():
+        feat_a = v[0]
+        feat_b = v[1]
+        ab_is_same = int(v[2])
+        # convert into np
+        np_feat_a = np.asarray(feat_a, dtype=np.float64)
+        np_feat_b = np.asarray(feat_b, dtype=np.float64)
+        # append
+        embeddings0.append(np_feat_a)
+        embeddings1.append(np_feat_b)
+        targets.append(ab_is_same)
+
+    # evaluate
+    embeddings0 = np.vstack(embeddings0)
+    embeddings1 = np.vstack(embeddings1)
+    targets = np.vstack(targets).reshape(
+        -1,
+    )
+    qlts = np.array(qlts)
+    if desc:
+        qlts_sorted_idx = np.argsort(qlts)
+    else:
+        qlts_sorted_idx = np.argsort(qlts)[::-1]
+
+    num_pairs = len(targets)
+
+    hq_pairs_idx = qlts_sorted_idx
+    pos_dists, neg_dists = calc_score(
+        embeddings0[hq_pairs_idx],
+        embeddings1[hq_pairs_idx],
+        targets[hq_pairs_idx],
+        dist_type=dist_type,
+    ) 
+    fnmr_threshold, fmr = get_eer_threshold_fix_fnmr(
+        pos_dists, neg_dists, fnmr_fixed= 1e-2, ds_scores= True
+    )
+
+    neg_false = [n for n in neg_dists if n > fnmr_threshold]
+    
+    return 1 - len(neg_false) / len(neg_dists), fmr
+
+    
+
 
 def save_pdf(fnmrs_lists, method_labels, model, output_dir, fmr, db):
     fontsize = 20
@@ -260,7 +306,7 @@ def save_pdf(fnmrs_lists, method_labels, model, output_dir, fmr, db):
         "|--",
         "---",
     ]
-    unconsidered_rates = 100 * np.arange(0, 0.98, 0.05)
+    unconsidered_rates = 100 * np.arange(0, 0.2, 0.01)
 
     fig, ax1 = plt.subplots()  # added
     if not os.path.isdir(output_dir):
@@ -287,8 +333,8 @@ def save_pdf(fnmrs_lists, method_labels, model, output_dir, fmr, db):
     plt.xlabel("Ratio of unconsidered image [%]")
 
     plt.xlabel("Ratio of unconsidered image [%]", fontsize=fontsize)
-    plt.xlim([0, 98])
-    plt.xticks(np.arange(0, 98, 10), fontsize=fontsize)
+    plt.xlim([0, 20])
+    plt.xticks(np.arange(0, 20, 1), fontsize=fontsize)
     plt.title(
         f"Testing on {db}, FMR={fmr}" + f" ({model})", fontsize=fontsize
     )  # update : -3

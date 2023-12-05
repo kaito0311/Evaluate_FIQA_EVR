@@ -8,7 +8,7 @@ from metrics.ERC.utils import *
 
 
 def quality_eval(
-    list_method_compares, 
+    list_method_compares,
     pair_list_path, embedding_dir, list_path_score, output_dir="output_dir", FMR=1e-3
 ):
     method_names = list_method_compares
@@ -25,7 +25,8 @@ def quality_eval(
             embedding_dir,
         )
 
-        quality_scores = load_quality_pair(pair_list_path, path_score, None, None)
+        quality_scores = load_quality_pair(
+            pair_list_path, path_score, None, None)
 
         fnmr, unconsidered_rates = getFNMRFixedFMR(
             feat_pairs=feat_pairs,
@@ -53,8 +54,72 @@ def quality_eval(
     save_pdf(
         fnmrs_list_2,
         method_labels,
-        model= config.name_face_recog_model,
+        model=config.name_face_recog_model,
         output_dir=output_dir,
         fmr=FMR,
-        db= config.name_dataset,
+        db=config.name_dataset,
+    )
+
+
+def quality_eval_nist(
+    list_method_compares,
+    pair_list_path, embedding_dir, list_path_score, output_dir="output_dir"
+):
+    '''
+    Follow NIST format 
+    '''
+    method_names = list_method_compares
+    fnmrs_list_2 = []
+    method_labels = []
+
+    for index, method_name in enumerate(method_names):
+        desc = False if method_name == "PFE" else True
+
+        path_score = list_path_score[index]
+
+        feat_pairs = load_feat_pair(
+            pair_list_path,
+            embedding_dir,
+        )
+
+        quality_scores = load_quality_pair(
+            pair_list_path, path_score, None, None)
+
+        FMR, fmr_at_idx = getFMRFixedFNMR(feat_pairs=feat_pairs,
+                              qlts=quality_scores,
+                              dist_type="cosine",
+                              desc=desc,)
+        
+        print("[INFO] FMR :", FMR, fmr_at_idx) 
+
+        fnmr, unconsidered_rates = getFNMRFixedFMR(
+            feat_pairs=feat_pairs,
+            qlts=quality_scores,
+            FMR=FMR,
+            dist_type="cosine",
+            desc=desc,
+        )
+        fnmrs_list_2.append(fnmr)
+        method_labels.append(f"{method_name}")
+
+        os.makedirs(
+            os.path.join(output_dir, "fnmr"),
+            exist_ok=True,
+        )
+        np.save(
+            os.path.join(
+                output_dir,
+                "fnmr",
+                f"{method_name}_{config.name_dataset}_{config.name_face_recog_model}_fnmr.npy",
+            ),
+            fnmr,
+        )
+    print(len(fnmrs_list_2))
+    save_pdf(
+        fnmrs_list_2,
+        method_labels,
+        model=config.name_face_recog_model,
+        output_dir=output_dir,
+        fmr=FMR,
+        db=config.name_dataset,
     )

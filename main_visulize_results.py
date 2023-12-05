@@ -1,4 +1,4 @@
-from metrics.ERC.erc import quality_eval
+from metrics.ERC.erc import quality_eval, quality_eval_nist
 from config.cfg import config
 
 quality_eval(
@@ -12,12 +12,28 @@ quality_eval(
                     #  "/data/disk2/tanminh/Evaluate_FIQA_EVR/output_result/testing_val_1.txt",
                     
                      "/data/disk2/tanminh/Evaluate_FIQA_EVR/data/processed_XQLFW/DiffFIQA_scores.txt",
-                      f"/data/disk2/tanminh/Evaluate_FIQA_EVR/data/processed_XQLFW/CR_ONTOP_10K_9KITER_scores.txt",
+                      f"/data/disk2/tanminh/IFQA/output_file_score.txt",
                     #   "/data/disk2/tanminh/Evaluate_FIQA_EVR/data/processed_XQLFW/FIQ_IMINT_scores.txt"
                       ],
-    output_dir="output_dir_change_range",
+    output_dir="output_dir_7",
     FMR = 1e-3
 )
+# quality_eval_nist(
+#     ["FaceQAN", "CR-QIFA", "FaceQAN-r160", "DiffQIFA", "CR-FIQA-Custom"],
+#     config.pair_list_path,
+#     # embedding_dir= "/data/disk2/tanminh/Evaluate_FIQA_EVR/data/processed_XQLFW/Elastic_embedding",
+#     embedding_dir= "/data/disk2/tanminh/Evaluate_FIQA_EVR/data/processed_XQLFW/IMINT_V5_PLUS_embedding",
+#     list_path_score=["/data/disk2/tanminh/FaceQAN/src/FaceQAN_XQLFW.txt",
+#                      "/data/disk2/tanminh/CR-FIQA/data/quality_data/XQLFW/CRFIQAS_XQLFW.txt", \
+#                      "/data/disk2/tanminh/Evaluate_FIQA_EVR/output_result/FaceQAN_XQLFW_r160.txt",
+#                     #  "/data/disk2/tanminh/Evaluate_FIQA_EVR/output_result/testing_val_1.txt",
+                    
+#                      "/data/disk2/tanminh/Evaluate_FIQA_EVR/data/processed_XQLFW/DiffFIQA_scores.txt",
+#                       f"/data/disk2/tanminh/Evaluate_FIQA_EVR/data/processed_XQLFW/CR_ONTOP_10K_9KITER_scores.txt",
+#                     #   "/data/disk2/tanminh/Evaluate_FIQA_EVR/data/processed_XQLFW/FIQ_IMINT_scores.txt"
+#                       ],
+#     output_dir="output_dir_nist",
+# )
 # quality_eval(
 #     ["CR-QIFA", "DIFF-FIQA_"],
 #     config.pair_list_path,

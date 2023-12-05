@@ -19,3 +19,5 @@ process_dataset/
 dataset_bin/
 *.csv
 *.pyc
+output_dir_7/
+output_dir_nist/
