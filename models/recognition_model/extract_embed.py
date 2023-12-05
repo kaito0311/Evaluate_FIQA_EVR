@@ -14,8 +14,10 @@ def extract_features(model, image_path_list, img_size=(112, 112), batch_size=4, 
     count = 0 
     num_batch = int(len(image_path_list) // batch_size)
     features = [] 
-    model.to(device)
-
+    try:
+        model.to(device)
+    except Exception as e: 
+        print("[ERROR] ", str(e))
     transform = T.Compose([
         T.Resize((112, 112)),
         T.ToTensor(),

@@ -8,4 +8,14 @@ output/
 log/
 eval_results/
 results_unit/
-process_dataset
+dataset_evaluate/
+output_dir_4/
+output_dir_5/
+output_dir_6/
+output_dir_change_range/
+output_result/
+pretrained/
+process_dataset/
+dataset_bin/
+*.csv
+*.pyc

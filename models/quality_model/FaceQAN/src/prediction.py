@@ -86,8 +86,8 @@ def __calculate_score_batch__(image_paths: list, eps: float, l: int, k: int, p: 
         In case you wish to use a different FR model simply replace the load_cosface function with a custom function 
         that loads your desired FR model, additionally change the mean, st.deviation and transform used by your custom FR model
     """
-    # model: torch.nn.Module = load_cosface().eval().cuda()
-    model: torch.nn.Module = load_imintv5("/data/disk2/tanminh/Evaluate_FIQA_EVR/pretrained/r160_imintv4_statedict.pth").eval().cuda()
+    model: torch.nn.Module = load_cosface().eval().cuda()
+    # model: torch.nn.Module = load_imintv5("/data/disk2/tanminh/Evaluate_FIQA_EVR/pretrained/r160_imintv4_statedict.pth").eval().cuda()
     mean, std = [.5, .5, .5], [.5, .5, .5]
     image_transforms = transforms.Compose([
         transforms.Resize((112, 112)),
@@ -139,7 +139,7 @@ def inference(list_images):
         )
     np.save("dict_score", dict_score)
 
-list_images = glob.glob("/data/disk2/tanminh/Evaluate_FIQA_EVR/data/processed_XQLFW/images/*.jpg")
-# list_images = glob.glob("/home/data2/tanminh/FIQA/CR-FIQA/xqlfw_aligned_112/*/*.jpg")
-print(len(list_images))
-inference(list_images= list_images)
+# list_images = glob.glob("/data/disk2/tanminh/Evaluate_FIQA_EVR/data/processed_XQLFW/images/*.jpg")
+# # list_images = glob.glob("/home/data2/tanminh/FIQA/CR-FIQA/xqlfw_aligned_112/*/*.jpg")
+# print(len(list_images))
+# inference(list_images= list_images)

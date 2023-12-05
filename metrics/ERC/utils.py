@@ -3,6 +3,7 @@ import math
 
 import sklearn
 import numpy as np
+from tqdm import tqdm
 from sklearn import metrics
 import matplotlib.pyplot as plt
 from matplotlib.font_manager import FontProperties
@@ -14,7 +15,7 @@ def load_feat_pair(pair_path, root):
     pairs = {}
     with open(pair_path, "r") as f:
         lines = f.readlines()
-        for idex in range(len(lines)):
+        for idex in tqdm(range(len(lines))):
             name1 = lines[idex].rstrip().split()[0]
             name1 = name1.split(".")[0]
             name2 = lines[idex].rstrip().split()[1]
@@ -30,6 +31,7 @@ def load_feat_pair(pair_path, root):
 def load_quality(path_score):
     quality = {}
     with open(path_score, "r") as f:
+        print("Loadding path score: ", path_score)
         lines = f.readlines()
         for l in lines:
             scores = l.split()[1].strip()
@@ -61,7 +63,9 @@ def load_quality_pair(pair_path, path_score, dataset, args):
                 print(e)
                 print(name1)
                 print(name2)
-                
+                print(quality.get(name1))
+                print(quality.get(name2))
+                exit()
             pairs_quality.append(qlt)
     return pairs_quality
 
@@ -184,7 +188,7 @@ def getFNMRFixedFMR(feat_pairs, qlts, FMR=1e-3, dist_type="cosine", desc=True):
         qlts_sorted_idx = np.argsort(qlts)[::-1]
 
     num_pairs = len(targets)
-    unconsidered_rates = np.arange(0, 0.98, 0.05)
+    unconsidered_rates = np.arange(0, 0.2, 0.01)
 
     fnmrs_list_2 = []
 

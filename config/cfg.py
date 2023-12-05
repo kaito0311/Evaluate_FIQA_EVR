@@ -1,9 +1,11 @@
 import os 
 
 class config:
-    name_dataset = "IJB_C" 
-    name_quality_model = "model"
-    name_face_recog_model = "Elastic"
+    name_dataset = "XQLFW" 
+    name_quality_model = "CR_ONTOP_10K_14KITER"
+    # name_face_recog_model = "Elastic"
+    name_face_recog_model = "Imintv5"
+    # name_face_recog_model = "IMINT_V5_PLUS"
 
     # dataset infor
     # dataset_original =  "/data/disk2/tanminh/CR-FIQA/data/XQLFW/xqlfw_aligned_112"
@@ -12,6 +14,7 @@ class config:
 
     # save process dataset infor
     data_folder = f"./data/processed_{name_dataset}"
+    # os.makedirs(data_folder)
     output_path_dir_images = os.path.join(data_folder, "images")
 
     image_path_list = os.path.join(data_folder, "image_path_list.txt")
@@ -23,9 +26,12 @@ class config:
     embeding_folder = os.path.join(data_folder, f"{name_face_recog_model}_embedding")
 
 
-    # Model Quality 
-    pretrain_quality_model = "/data/disk2/tanminh/CR-FIQA/pretrained/32572backbone.pth"
+    # Model Quality CR-FIQA
+    # pretrain_quality_model = "/data/disk2/tanminh/CR-FIQA/pretrained/32572backbone.pth"
+    pretrain_quality_model = "/data/disk2/tanminh/Evaluate_FIQA_EVR/pretrained/181952backbone.pth"
 
+
+    # FMR
     FMR = 1e-3
 
 

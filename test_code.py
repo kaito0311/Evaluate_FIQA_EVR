@@ -1,63 +1,106 @@
-import os
-import cv2
-import numpy as np
-import shutil
-from skimage import transform as trans
-from tqdm import tqdm
+from process_dataset.CALFW.calfw import CALFW_Dataset
+import torch
 
 
-# change this for other dataset
-path = "/data/disk2/tanminh/ijb/IJBC"
-image_size = (112,112)
-outpath = "./data/process_IJB_C"
-
-ref_lmk = np.array([
-            [30.2946, 51.6963],
-            [65.5318, 51.5014],
-            [48.0252, 71.7366],
-            [33.5493, 92.3655],
-            [62.7299, 92.2041]], dtype=np.float32)
-ref_lmk[:, 0] += 8.0
-
-dataset_name = path.split("/")[-1]
-rel_img_path = os.path.join(outpath.split("/")[-1], dataset_name, "images")
-outpath = os.path.join(outpath, dataset_name)
-if not os.path.exists(outpath):
-    os.makedirs(outpath)
-    os.makedirs(os.path.join(outpath, "images"))
-
-print("extract:", dataset_name)
-
-img_path = os.path.join(path, "loose_crop")
-img_list_path = os.path.join(path, "meta", f"{dataset_name.lower()}_name_5pts_score.txt")
-img_list = open(img_list_path)
-files_list = img_list.readlines()
-
-txt_file = open(os.path.join(outpath, "image_path_list.txt"), "w")
-
-for img_index, each_line in tqdm(enumerate(files_list), total=len(files_list)):
-    name_lmk_score = each_line.strip().split(' ')
-    img_name = os.path.join(img_path, name_lmk_score[0])
-    img = cv2.imread(img_name)
-    lmk = np.array([float(x) for x in name_lmk_score[1:-1]],
-                    dtype=np.float32)
-    lmk = lmk.reshape((5, 2))
-
-    assert lmk.shape[0] == 5 and lmk.shape[1] == 2
-
-    tform = trans.SimilarityTransform()
-    tform.estimate(lmk, ref_lmk)
-    M = tform.params[0:2, :]
-    img = cv2.warpAffine(img, M, image_size, borderValue=0.0)
-    img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
-
-    cv2.imwrite(os.path.join(outpath, "images", name_lmk_score[0]), img)
-    txt_file.write(os.path.join(rel_img_path, name_lmk_score[0])+"\n")
+from models.quality_model.Custom.crfiqa_ontop import CRFIQA_ontop 
 
 
-txt_file.close()
-shutil.copy(
-    os.path.join(path, "meta", f"{dataset_name.lower()}_template_pair_label.txt"),
-    os.path.join(outpath, "pair_list.txt")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import numpy as np 
+
+fnmr = np.load("/data/disk2/tanminh/Evaluate_FIQA_EVR/output_dir_6/fnmr/CR-ONTOP-14K_fnmr.npy")
+print(fnmr)
+
+
+
+
+
+
+exit() 
+model = CRFIQA_ontop(pretrained_backbone="/data/disk2/tanminh/Evaluate_FIQA_EVR/pretrained/55000backbone.pth",
+                     pretrained_head="/data/disk2/tanminh/Evaluate_FIQA_EVR/pretrained/55000header.pth", device="cuda")
+
+model(torch.rand(4,3,112,112).to("cuda"))
+
+
+# dataset = CPLFW_Dataset("/data/disk2/tanminh/Evaluate_FIQA_EVR/dataset_evaluate/cplfw.bin")
+
+# dataset.process(
+#     "calfw/save_images_temp", 
+#     "calfw/file_name.txt",
+#     "calfw/file_pair.txt"
+# )
+
+# value = True
+
+# print(str(int(bool(value) == 1)))
+
+# import cv2
+# import numpy as np
+# import onnxruntime 
+
+# path = "/data/disk2/tanminh/Evaluate_FIQA_EVR/pretrained/stacking_avg_r160+ada-unnorm-stacking-ada-1.6.onnx"
+
+# session = onnxruntime.InferenceSession(path, providers = ['CUDAExecutionProvider'])
+
+# IN_IMAGE_H = session.get_inputs()[0].shape[2]
+# IN_IMAGE_W = session.get_inputs()[0].shape[3]
+
+# # Input
+# image_src = cv2.imread("/data/disk2/tanminh/Evaluate_FIQA_EVR/data/processed_XQLFW/images/Abdoulaye_Wade_0004.jpg")
+# resized = cv2.resize(image_src, (IN_IMAGE_W, IN_IMAGE_H), interpolation=cv2.INTER_LINEAR)
+# img_in = cv2.cvtColor(resized, cv2.COLOR_BGR2RGB)
+# img_in = np.transpose(img_in, (2, 0, 1)).astype(np.float32)
+# img_in = np.expand_dims(img_in, axis=0)
+# img_in /= 255.0
+# img_in = img_in - 0.5 
+# img_in /= 0.5
+# # img_in = -1 + img_in * 2 
+# # img_in = np.clip(img_in, -1, 1) 
+# print(np.max(img_in))
+
+# print("Shape of the network input: ", img_in.shape)
+
+
+
+# input = session.get_inputs()
+
+# input_name = session.get_inputs()[0].name 
+# outputs = session.run(None, {input_name: img_in})
+
+# print(type(outputs))
+# print(outputs)
+# np.save("file2", outputs[0])
+
+
+# feature1 = np.load("/data/disk2/tanminh/Evaluate_FIQA_EVR/file1.npy")
+# feature2 = np.load("/data/disk2/tanminh/Evaluate_FIQA_EVR/file2.npy")
+# feature1 = feature1 / np.linalg.norm(feature1)
+# feature2 = feature2 / np.linalg.norm(feature2) 
+# dis = np.sqrt(np.sum((feature1 - feature2) ** 2))
+# print("dis: ", dis)
+
+import torch 
+
+from models.quality_model.Imintv5.imint import ONNX_FIQ_IMINT
+model = ONNX_FIQ_IMINT(
+    path="/data/disk2/tanminh/Evaluate_FIQA_EVR/pretrained/model_fiq_imintv5.onnx"
 )
-print("pair_list saved")
+
+output = model(torch.rand(4, 3, 112, 112))
+print(output.shape)
+print(output)

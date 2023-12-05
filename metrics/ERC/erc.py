@@ -45,7 +45,7 @@ def quality_eval(
             os.path.join(
                 output_dir,
                 "fnmr",
-                f"{method_name}_fnmr.npy",
+                f"{method_name}_{config.name_dataset}_{config.name_face_recog_model}_fnmr.npy",
             ),
             fnmr,
         )

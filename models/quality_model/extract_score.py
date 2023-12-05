@@ -14,7 +14,10 @@ def extract_scores(model, image_path_list, img_size=(112, 112), batch_size=4, de
     count = 0 
     num_batch = int(len(image_path_list) // batch_size)
     scores = [] 
-    model.to(device)
+    try:
+        model.to(device)
+    except Exception as e:
+        print("[ERROR]: ", e)
 
     transform = T.Compose([
         T.Resize((112, 112)),
@@ -46,7 +49,7 @@ def extract_scores(model, image_path_list, img_size=(112, 112), batch_size=4, de
         # NOTE: Can change depends on output of model. 
         batch_scores = model(batch_tensor) 
         if isinstance(batch_scores, torch.Tensor):
-            batch_scores = batch_scores.detach().cpu().numpy() 
+            batch_scores = batch_scores.detach().cpu().numpy()
         scores.append(batch_scores) 
 
     scores = np.vstack(scores)
