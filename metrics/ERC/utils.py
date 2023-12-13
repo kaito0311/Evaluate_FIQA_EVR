@@ -188,7 +188,7 @@ def getFNMRFixedFMR(feat_pairs, qlts, FMR=1e-3, dist_type="cosine", desc=True):
         qlts_sorted_idx = np.argsort(qlts)[::-1]
 
     num_pairs = len(targets)
-    unconsidered_rates = np.arange(0, 0.2, 0.01)
+    unconsidered_rates = np.arange(0, 0.98, 0.05)
 
     fnmrs_list_2 = []
 

@@ -19,8 +19,10 @@ if config.name_dataset.lower() == "lfw":
     )
 # elif config.name_dataset.lower() == 'xqlfw':
 #     dataset = ...
-# elif config.name_dataset.lower() == "cplfw":
-#     ...
+elif config.name_dataset.lower() == "cplfw":
+    dataset = CPLFW_Dataset(
+        "dataset_bin/cplfw.bin",
+    )
 # elif config.name_dataset.lower() == "calfw":
 #     ...
 # elif config.name_dataset.lower() == "cfp_fp":

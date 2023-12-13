@@ -2,7 +2,7 @@ import os
 
 class config:
     name_dataset = "XQLFW" 
-    name_quality_model = "CR_ONTOP_10K_14KITER"
+    name_quality_model = "ViT_FIQA"
     # name_face_recog_model = "Elastic"
     name_face_recog_model = "Imintv5"
     # name_face_recog_model = "IMINT_V5_PLUS"

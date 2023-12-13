@@ -6,7 +6,7 @@ from config.cfg import config
 
 # ====================== Model CR-FIQA
 print("[INFO] Using quality model: ", config.name_quality_model.lower())
-if config.name_quality_model.lower() == "cf-fiqa":
+if config.name_quality_model.lower() == "cr-fiqa":
     model = CR_FIQA_Model(
         pretrained=config.pretrain_quality_model, arch="r100")
 
@@ -27,59 +27,49 @@ elif config.name_quality_model.lower() == "cr_fiqa_ontop":
         pretrained_head="/data/disk2/tanminh/Evaluate_FIQA_EVR/pretrained/2000header.pth",
         device="cuda",
     )
-elif config.name_quality_model.lower() == "cr_fiqa_ontop_4k":
     # ====================== Model CR-FIQA-ONTOP ========================
-    from models.quality_model.Custom.crfiqa_ontop import CRFIQA_ontop
+elif config.name_quality_model.lower() == str("CR_ONTOP_10K_MULTI_FC_KL").lower():
+    from models.quality_model.Custom.crfiqa_ontop import CRFIQA_ontop_multi_fc
+    model = CRFIQA_ontop_multi_fc(
+        pretrained_backbone=None,
+        # pretrained_head="pretrained/pure_l1_multi_fc_kl_div_280000header.pth",
+        pretrained_head="/data/disk2/tanminh/Evaluate_FIQA_EVR/pretrained/norm_cosine_79000header.pth",
+        device="cuda",
+    )
+    model.eval() 
+elif config.name_quality_model.lower() == str("CR_ONTOP_10K_MULTI_FC_KL_NORM").lower():
+    from models.quality_model.Custom.crfiqa_ontop import CRFIQA_ontop_multi_fc
+    model = CRFIQA_ontop_multi_fc(
+        pretrained_backbone=None,
+        # pretrained_head="pretrained/pure_l1_multi_fc_kl_div_280000header.pth",
+        pretrained_head="/data/disk2/tanminh/Evaluate_FIQA_EVR/pretrained/norm_cosine_266000header.pth",
+        device="cuda",
+    )
+    model.eval() 
+elif config.name_quality_model.lower() == str("CR_ONTOP_10K_MULTI_FC_KL_FIXBUG").lower():
+    from models.quality_model.Custom.crfiqa_ontop import CRFIQA_ontop_multi_fc
+    model = CRFIQA_ontop_multi_fc(
+        pretrained_backbone=None,
+        # pretrained_head="pretrained/pure_l1_multi_fc_kl_div_280000header.pth",
+        pretrained_head="/data/disk2/tanminh/Evaluate_FIQA_EVR/pretrained/norm_cosine_58000header_truth.pth",
+        device="cuda",
+    )
+    model.eval() 
+elif config.name_quality_model.lower() == str("CR_ONTOP_SUB_NNCCS").lower():
+    from models.quality_model.Custom.crfiqa_ontop import CRFIQA_ontop_multi_fc
+    model = CRFIQA_ontop_multi_fc(
+        pretrained_backbone=None,
+        # pretrained_head="pretrained/pure_l1_multi_fc_kl_div_280000header.pth",
+        pretrained_head="/data/disk2/tanminh/Evaluate_FIQA_EVR/pretrained/norm_cosine_298000header_tadd_loss_regress.pth",
+        device="cuda",
+    )
+    model.eval() 
 
-    model = CRFIQA_ontop(
-        pretrained_backbone="/data/disk2/tanminh/Evaluate_FIQA_EVR/pretrained/4000backbone.pth",
-        pretrained_head="/data/disk2/tanminh/Evaluate_FIQA_EVR/pretrained/4000header.pth",
-        device="cuda",
-    )
-
-elif config.name_quality_model.lower() == "new_cr_fiqa":
-    from models.quality_model.Custom.crfiqa_ontop import CRFIQA_ontop
-    model = CRFIQA_ontop(
-        pretrained_backbone=None,
-        pretrained_head="/data/disk2/tanminh/Evaluate_FIQA_EVR/pretrained/ori_15030header",
-        device="cuda",
-    )
-
-elif config.name_quality_model.lower() == "new_cr_fiqa_ori":
-    from models.quality_model.Custom.crfiqa_ontop import CRFIQA_ontop
-    model = CRFIQA_ontop(
-        pretrained_backbone=None,
-        pretrained_head="/data/disk2/tanminh/Evaluate_FIQA_EVR/pretrained/3340header.pth",
-        device="cuda",
-    )
-elif config.name_quality_model.lower() == "new_cr_fiqa_ori_fi":
-    from models.quality_model.Custom.crfiqa_ontop import CRFIQA_ontop
-    model = CRFIQA_ontop(
-        pretrained_backbone=None,
-        pretrained_head="/data/disk2/tanminh/Evaluate_FIQA_EVR/pretrained/10k_4000header.pth",
-        device="cuda",
-    )
-elif config.name_quality_model.lower() == str("CR_ONTOP_10K_9KITER").lower():
-    from models.quality_model.Custom.crfiqa_ontop import CRFIQA_ontop
-    model = CRFIQA_ontop(
-        pretrained_backbone=None,
-        pretrained_head="/data/disk2/tanminh/Evaluate_FIQA_EVR/pretrained/100k_ cosine_10000header.pth",
-        device="cuda",
-    )
-elif config.name_quality_model.lower() == str("CR_ONTOP_10K_12KITER").lower():
-    from models.quality_model.Custom.crfiqa_ontop import CRFIQA_ontop
-    model = CRFIQA_ontop(
-        pretrained_backbone=None,
-        pretrained_head="/data/disk2/tanminh/Evaluate_FIQA_EVR/pretrained/100k_12000header.pth",
-        device="cuda",
-    )
-elif config.name_quality_model.lower() == str("CR_ONTOP_10K_14KITER").lower():
-    from models.quality_model.Custom.crfiqa_ontop import CRFIQA_ontop
-    model = CRFIQA_ontop(
-        pretrained_backbone=None,
-        pretrained_head="/data/disk2/tanminh/Evaluate_FIQA_EVR/pretrained/100k_17000header.pth",
-        device="cuda",
-    )
+elif config.name_quality_model.lower() == str("ViT_FIQA").lower():
+    from models.quality_model.ViT.vit_fiqa import VIT_FIQA
+    model = VIT_FIQA()
+    model.load_state_dict(torch.load("pretrained/vit_2100header.pth"))
+    model.eval() 
 
 
 else:
@@ -89,7 +79,7 @@ else:
 image_path_list = glob.glob(config.output_path_dir_images + "/*.jpg")
 
 output_scores = extract_scores(
-    model=model, image_path_list=image_path_list, batch_size= 16, device="cuda"
+    model=model, image_path_list=image_path_list, batch_size= 4, device="cuda"
 )
 
 print(output_scores)

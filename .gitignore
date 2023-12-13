@@ -11,7 +11,7 @@ results_unit/
 dataset_evaluate/
 output_dir_4/
 output_dir_5/
-output_dir_6/
+output_dir_*/
 output_dir_change_range/
 output_result/
 pretrained/
