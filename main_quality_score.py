@@ -20,10 +20,10 @@ elif config.name_quality_model.lower() == "fiq_imint":
     )
 elif config.name_quality_model.lower() == "DiffFIQA".lower():
     # ====================== Model FIQ IMINT ========================
-    from models.quality_model.DiffFIQA.DifFIQA.diffiqa_r.inference_wrap import InferenceDiffFiQA
+    from models.quality_model.DiffFIQA.DiffFIQA.diffiqa_r.inference_wrap import InferenceDiffFiQA
 
     model = InferenceDiffFiQA(
-        file_config="models/quality_model/DiffFIQA/DifFIQA/diffiqa_r/configs/inference_config.yaml"
+        file_config="models/quality_model/DiffFIQA/DiffFIQA/diffiqa_r/configs/inference_config.yaml"
     )
 
 elif config.name_quality_model.lower() == "cr_fiqa_ontop":

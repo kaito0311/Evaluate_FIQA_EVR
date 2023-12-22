@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 
 
 
-result = np.load("/data/disk2/tanminh/Evaluate_FIQA_EVR/models/quality_model/DiffFIQA/DifFIQA/diffiqa_r/result.npy", allow_pickle= True).item()
+result = np.load("/data/disk2/tanminh/Evaluate_FIQA_EVR/models/quality_model/DiffFIQA/DiffFIQA/diffiqa_r/result.npy", allow_pickle= True).item()
 
 file = open("DiffFIQA_scores.txt", "w") 
 
