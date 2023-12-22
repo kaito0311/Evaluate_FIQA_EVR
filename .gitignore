@@ -15,7 +15,6 @@ output_dir_*/
 output_dir_change_range/
 output_result/
 pretrained/
-process_dataset/
 dataset_bin/
 *.csv
 *.pyc
