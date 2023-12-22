@@ -2,7 +2,8 @@ import os
 
 class config:
     name_dataset = "XQLFW" 
-    name_quality_model = "ViT_FIQA"
+    # name_quality_model = "DiffFIQA"
+    name_quality_model = "ViT_FIQA_FLIP"
     # name_face_recog_model = "Elastic"
     name_face_recog_model = "Imintv5"
     # name_face_recog_model = "IMINT_V5_PLUS"
@@ -11,6 +12,8 @@ class config:
     # dataset_original =  "/data/disk2/tanminh/CR-FIQA/data/XQLFW/xqlfw_aligned_112"
     # pairs_list_path_original =  "/data/disk2/tanminh/CR-FIQA/data/XQLFW/xqlfw_pairs.txt"
 
+    # size image 
+    image_size_quality = 224
 
     # save process dataset infor
     data_folder = f"./data/processed_{name_dataset}"
@@ -28,7 +31,7 @@ class config:
 
     # Model Quality CR-FIQA
     # pretrain_quality_model = "/data/disk2/tanminh/CR-FIQA/pretrained/32572backbone.pth"
-    pretrain_quality_model = "/data/disk2/tanminh/Evaluate_FIQA_EVR/pretrained/181952backbone.pth"
+    pretrain_quality_model = "pretrained/181952backbone.pth"
 
 
     # FMR

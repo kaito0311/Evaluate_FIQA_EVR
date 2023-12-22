@@ -1,7 +1,7 @@
 from config.cfg import config
 from process_dataset.CALFW.calfw import CALFW_Dataset
 from process_dataset.CPLFW.cplfw import CPLFW_Dataset
-from process_dataset.LFW.lfw import LFW_Dataset
+# from process_dataset.LFW.lfw import LFW_Dataset
 
 
 # dataset = CALFW_Dataset("/data/disk2/tanminh/Evaluate_FIQA_EVR/dataset_evaluate/cplfw.bin")
@@ -22,6 +22,10 @@ if config.name_dataset.lower() == "lfw":
 elif config.name_dataset.lower() == "cplfw":
     dataset = CPLFW_Dataset(
         "dataset_bin/cplfw.bin",
+    )
+elif config.name_dataset.lower() == "calfw":
+    dataset = CPLFW_Dataset(
+        "dataset_bin/calfw.bin",
     )
 # elif config.name_dataset.lower() == "calfw":
 #     ...

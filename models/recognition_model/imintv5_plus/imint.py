@@ -8,7 +8,7 @@ from typing import Any
 
 
 class ONNX_IMINT:
-    def __init__(self, path="/data/disk2/tanminh/Evaluate_FIQA_EVR/pretrained/stacking_avg_r160+ada-unnorm-stacking-ada-1.6.onnx") -> None:
+    def __init__(self, path="pretrained/stacking_avg_r160+ada-unnorm-stacking-ada-1.6.onnx") -> None:
         self.session = onnxruntime.InferenceSession(path, providers = ['CUDAExecutionProvider'])
 
         self.input_session = self.session.get_inputs() 
